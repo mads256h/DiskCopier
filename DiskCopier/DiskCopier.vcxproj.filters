@@ -15,21 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DiskCopier.cpp">
+    <ClCompile Include="cd_drive.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CdDrive.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CdDrive.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="win32exception.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="read_error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cd_drive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_exception.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

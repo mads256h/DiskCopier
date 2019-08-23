@@ -1,9 +1,13 @@
-#include "CdDrive.h"
+#include "cd_drive.h"
+#include "win32_exception.h"
+#include "read_error.h"
+
+#include <iostream>
 
 #include <fileapi.h>
 #include <winioctl.h>
-#include <iostream>
-#include "read_error.h"
+
+
 
 void cd_drive::lock_unlock_drive(bool lock) const
 {
@@ -27,7 +31,7 @@ void cd_drive::dismount_volume() const
 
 cd_drive::cd_drive(const std::string_view drive_path) : drive_path_(drive_path)
 {
-	h_drive_ = CreateFileA(drive_path_.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL);
+	h_drive_ = CreateFileA(drive_path_.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, NULL, NULL);
 
 	if (!h_drive_)
 	{

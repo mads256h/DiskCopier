@@ -155,13 +155,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CdDrive.cpp" />
-    <ClCompile Include="DiskCopier.cpp" />
+    <ClCompile Include="cd_drive.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CdDrive.h" />
+    <ClInclude Include="cd_drive.h" />
     <ClInclude Include="read_error.h" />
-    <ClInclude Include="win32exception.h" />
+    <ClInclude Include="win32_exception.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

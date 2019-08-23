@@ -1,7 +1,5 @@
 #pragma once
 
-#include "win32exception.h"
-
 #include <string>
 #include <string_view>
 #include <cstdint>
@@ -10,7 +8,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-class cd_drive
+class cd_drive final
 {
 	std::string drive_path_;
 	HANDLE h_drive_;

@@ -1,14 +1,13 @@
 // DiskCopier.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "CdDrive.h"
+#include "cd_drive.h"
 #include "read_error.h"
+#include "win32_exception.h"
 
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
-
-#include <fileapi.h>
 
 
 int main(int argc, char* argv[])
@@ -51,7 +50,7 @@ int main(int argc, char* argv[])
 				std::array<char, 2048> sector_data(drive.read_sector(i, retries));
 				outputStream.write(sector_data.data(), sector_data.size());
 			}
-			catch (read_error &e)
+			catch (read_error)
 			{
 				std::cout << "Read error at sector " << i << " writing zeros!\n";
 				std::array<char, 2048> empty{};
