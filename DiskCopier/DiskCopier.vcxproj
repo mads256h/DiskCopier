@@ -160,7 +160,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CdDrive.h" />
-    <ClInclude Include="DiskCopier.h" />
     <ClInclude Include="read_error.h" />
     <ClInclude Include="win32exception.h" />
   </ItemGroup>
