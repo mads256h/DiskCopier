@@ -9,6 +9,14 @@
 #include <iostream>
 #include <fstream>
 
+volatile bool stop = false;
+
+BOOL WINAPI ConsoleCtrlHandler(DWORD signal)
+{
+	stop = true;
+
+	return TRUE;
+}
 
 int main(int argc, char* argv[])
 {
@@ -26,6 +34,12 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	if (!SetConsoleCtrlHandler(ConsoleCtrlHandler, TRUE))
+	{
+		std::cout << "Could not set console ctrl handler: " << GetLastError();
+		return 1;
+	}
+	
 	try
 	{
 		const cd_drive drive(argv[3]);
@@ -45,12 +59,18 @@ int main(int argc, char* argv[])
 		
 		for (uint64_t i = 0; i < sectors; i++)
 		{
+			if (stop)
+			{
+				drive.eject();
+				return 0;
+			}
+			
 			try
 			{
 				std::array<char, 2048> sector_data(drive.read_sector(i, retries));
 				outputStream.write(sector_data.data(), sector_data.size());
 			}
-			catch (read_error)
+			catch (read_error&)
 			{
 				std::cout << "Read error at sector " << i << " writing zeros!\n";
 				std::array<char, 2048> empty{};

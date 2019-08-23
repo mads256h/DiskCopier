@@ -42,5 +42,7 @@ public:
 
 	//Allows full access to the drive content.
 	void allow_extended_dasd_io() const;
+
+	[[nodiscard]] HANDLE handle() const;
 };
 

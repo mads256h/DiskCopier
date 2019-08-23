@@ -159,5 +159,7 @@ void cd_drive::allow_extended_dasd_io() const
 	}
 }
 
-
-
+HANDLE cd_drive::handle() const
+{
+	return h_drive_;
+}
