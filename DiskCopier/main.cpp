@@ -8,10 +8,11 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 volatile bool stop = false;
 
-BOOL WINAPI ConsoleCtrlHandler(DWORD signal)
+BOOL WINAPI ConsoleCtrlHandler(DWORD)
 {
 	stop = true;
 
@@ -20,29 +21,23 @@ BOOL WINAPI ConsoleCtrlHandler(DWORD signal)
 
 int main(int argc, char* argv[])
 {
-	if (argc != 4)
+	if (argc != 3)
 	{
-		std::cout << "DiskCopier.exe retries outputfile diskdrive\n";
+		std::cout << "DiskCopier.exe outputfile diskdrive\n";
 		return 1;
 	}
-	
-	const long retries = strtol(argv[1], nullptr, 10);
 
-	if (retries == LONG_MIN || retries == LONG_MAX)
-	{
-		std::cout << "retries argument is not a valid number.\n";
-		return 1;
-	}
+
 
 	if (!SetConsoleCtrlHandler(ConsoleCtrlHandler, TRUE))
 	{
 		std::cout << "Could not set console ctrl handler: " << GetLastError();
 		return 1;
 	}
-	
+
 	try
 	{
-		const cd_drive drive(argv[3]);
+		const cd_drive drive(argv[2]);
 
 		drive.lock_drive();
 		drive.lock_volume();
@@ -53,38 +48,67 @@ int main(int argc, char* argv[])
 
 		std::cout << "Disk size: " << size << '\n';
 		std::cout << "Sectors: " << sectors << '\n';
-		
 
-		std::ofstream outputStream(argv[2], std::ofstream::binary);
-		
+		std::vector<uint64_t> failed_sectors;
+
+		std::ofstream outputStream(argv[1], std::ofstream::binary);
+
 		for (uint64_t i = 0; i < sectors; i++)
 		{
 			if (stop)
 			{
-				drive.eject();
-				return 0;
+				goto end;
 			}
-			
+
 			try
 			{
-				std::array<char, 2048> sector_data(drive.read_sector(i, retries));
+				const std::array<char, 2048> sector_data(drive.read_sector(i));
 				outputStream.write(sector_data.data(), sector_data.size());
 			}
 			catch (read_error&)
 			{
 				std::cout << "Read error at sector " << i << " writing zeros!\n";
-				std::array<char, 2048> empty{};
+				constexpr std::array<char, 2048> empty{};
 				outputStream.write(empty.data(), empty.size());
+				failed_sectors.push_back(i);
 			}
 		}
 
+		std::cout << "Trying to recover bad sectors.\n";
+
+		while (!failed_sectors.empty())
+		{
+			for (size_t i = 0; i < failed_sectors.size(); i++)
+			{
+				if (stop)
+				{
+					goto end;
+				}
+
+				try
+				{
+					const std::array<char, 2048> sector_data(drive.read_sector(failed_sectors[i]));
+					outputStream.seekp(failed_sectors[i] * 2048);
+					outputStream.write(sector_data.data(), sector_data.size());
+					std::cout << "Recovered sector " << failed_sectors[i] << '\n';
+					failed_sectors.erase(failed_sectors.begin() + i);
+				}
+				catch (read_error&)
+				{
+					std::cout << "Read failed at sector " << failed_sectors[i] << '\n';
+				}
+			}
+		}
+	end:
+
 		drive.eject();
 	}
-	catch (win32_exception &e)
+	catch (win32_exception& e)
 	{
 		std::cout << e.what();
 	}
-	
+
+	return 0;
 }
 
 

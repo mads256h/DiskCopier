@@ -15,7 +15,7 @@ public:
 	{
 		std::stringstream ss;
 		ss << message;
-		ss << "\nError code: " << error_code;
+		ss << "\nError code: " << error_code << '\n';
 
 		message_ = ss.str();
 	}
