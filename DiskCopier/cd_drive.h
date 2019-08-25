@@ -8,6 +8,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
+#define SECTOR_SIZE 2048
+
 /**
  * \brief A class that does certain operations on a CD or DVD drive.
  */
@@ -76,11 +78,7 @@ public:
 	 * \return The size of the disk.
 	 */
 	[[nodiscard]] uint64_t disk_size() const;
-	/**
-	 * \brief Gets the CD/DVD sector size.
-	 * \return The CD/DVD sector size.
-	 */
-	[[nodiscard]] static constexpr uint64_t sector_size();
+
 	/**
 	 * \brief Gets the amount of sectors on disk.
 	 * \return The amount of sectors on disk.
@@ -92,7 +90,7 @@ public:
 	 * \param sector Sector to read.
 	 * \return Array representation of sector.
 	 */
-	[[nodiscard]] std::array<char, 2048> read_sector(const uint64_t sector) const;
+	[[nodiscard]] std::array<char, SECTOR_SIZE> read_sector(const uint64_t sector) const;
 
 
 	/**

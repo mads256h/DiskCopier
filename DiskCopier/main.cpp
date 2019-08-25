@@ -68,13 +68,13 @@ int main(int argc, char* argv[])
 
 			try
 			{
-				const std::array<char, 2048> sector_data(drive.read_sector(i));
+				const std::array<char, SECTOR_SIZE> sector_data(drive.read_sector(i));
 				output_stream.write(sector_data.data(), sector_data.size());
 			}
 			catch (read_error&)
 			{
 				std::cout << "Read error at sector " << i << " writing zeros!\n";
-				constexpr std::array<char, 2048> empty{};
+				constexpr std::array<char, SECTOR_SIZE> empty{};
 				output_stream.write(empty.data(), empty.size());
 				failed_sectors.push_back(i);
 			}
@@ -93,8 +93,8 @@ int main(int argc, char* argv[])
 
 				try
 				{
-					const std::array<char, 2048> sector_data(drive.read_sector(failed_sectors[i]));
-					output_stream.seekp(failed_sectors[i] * 2048);
+					const std::array<char, SECTOR_SIZE> sector_data(drive.read_sector(failed_sectors[i]));
+					output_stream.seekp(failed_sectors[i] * SECTOR_SIZE);
 					output_stream.write(sector_data.data(), sector_data.size());
 					std::cout << "Recovered sector " << failed_sectors[i] << '\n';
 					failed_sectors.erase(failed_sectors.begin() + i);

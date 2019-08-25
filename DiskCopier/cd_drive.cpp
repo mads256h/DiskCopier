@@ -117,28 +117,23 @@ uint64_t cd_drive::disk_size() const
 	return gli.Length.QuadPart;
 }
 
-constexpr uint64_t cd_drive::sector_size()
-{
-	return 2048;
-}
-
 uint64_t cd_drive::sector_count() const
 {
-	return disk_size() / sector_size();
+	return disk_size() / SECTOR_SIZE;
 }
 
-std::array<char, cd_drive::sector_size()> cd_drive::read_sector(const uint64_t sector) const
+std::array<char, SECTOR_SIZE> cd_drive::read_sector(const uint64_t sector) const
 {
 	LARGE_INTEGER li;
-	li.QuadPart = sector * sector_size();
+	li.QuadPart = sector * SECTOR_SIZE;
 
-	std::array<char, sector_size()> buffer = {};
+	std::array<char, SECTOR_SIZE> buffer = {};
 	if (!SetFilePointerEx(h_drive_, li, NULL, FILE_BEGIN))
 	{
 		throw win32_exception(GetLastError(), "Could not set FilePointer.");
 	}
 
-	if (DWORD bytes = 0; !(ReadFile(h_drive_, buffer.data(), sector_size(), &bytes, NULL) && bytes == sector_size()))
+	if (DWORD bytes = 0; !(ReadFile(h_drive_, buffer.data(), SECTOR_SIZE, &bytes, NULL) && bytes == SECTOR_SIZE))
 	{
 		const DWORD e = GetLastError();
 
@@ -146,7 +141,7 @@ std::array<char, cd_drive::sector_size()> cd_drive::read_sector(const uint64_t s
 		{
 			throw read_error();
 		}
-		if (bytes != sector_size())
+		if (bytes != SECTOR_SIZE)
 		{
 			throw std::exception("Invalid bytes read");
 		}
