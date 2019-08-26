@@ -22,9 +22,15 @@ public:
 	 */
 	win32_exception(const DWORD error_code, const std::string_view message)
 	{
+		LPSTR str = NULL;
+		FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		               NULL, error_code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&str, 0, NULL);
+		
 		std::stringstream ss;
 		ss << message;
-		ss << "\nError code: " << error_code << '\n';
+		ss << "\nError code: " << error_code << ": " << str << '\n';
+
+		LocalFree(str);
 
 		message_ = ss.str();
 	}

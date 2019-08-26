@@ -33,7 +33,7 @@ cd_drive::cd_drive(const std::string_view drive_path) : drive_path_(drive_path)
 {
 	if (GetFileAttributesA(drive_path_.c_str()) == INVALID_FILE_ATTRIBUTES && GetLastError() == ERROR_FILE_NOT_FOUND)
 	{
-		throw win32_exception(GetLastError(), "Drive does not exist");
+		throw win32_exception(ERROR_FILE_NOT_FOUND, "Drive does not exist");
 	}
 	
 	h_drive_ = CreateFileA(drive_path_.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, NULL, NULL);
